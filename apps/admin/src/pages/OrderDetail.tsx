@@ -121,8 +121,8 @@ export default function OrderDetailPage() {
     onSuccess: invalidate,
   });
 
-  const { mutate: sendMessage, isPending: sending } = useMutation({
-    mutationFn: () =>
+  const { mutate: sendMessage, isPending: sending } = useMutation<any, any, void>({
+    mutationFn: (): Promise<any> =>
       composeMode === 'customer'
         ? api.post(`/admin/orders/${id}/message`, { message: compose })
         : api.post(`/admin/orders/${id}/notes`, { note: compose }),
