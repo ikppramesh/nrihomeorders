@@ -1,0 +1,494 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum KycStatus {
+  NOT_SUBMITTED
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum SubscriptionPlan {
+  NONE
+  NRI_SEVA_BASIC
+  NRI_SEVA_FAMILY
+  FULL_SERVICE
+}
+
+enum ServiceType {
+  NRI_SEVA_BILL_PAYMENT
+  NRI_SEVA_INSURANCE_RENEWAL
+  NRI_SEVA_GOVT_FEE
+  SHOP_INDIA_PRODUCT_SOURCING
+}
+
+enum OrderStatus {
+  NEW_REQUEST
+  UNDER_REVIEW
+  QUOTE_SENT
+  QUOTE_EXPIRED
+  APPROVED_PAID
+  SOURCING
+  QUALITY_CHECK
+  QC_ADMIN_REVIEW
+  QC_APPROVED
+  PACKING
+  CUSTOMS_DOCS
+  DISPATCHED
+  IN_TRANSIT
+  DELIVERED
+  COMPLETED
+  NEEDS_REAPPROVAL
+  CANCELLED
+  ARCHIVED
+}
+
+enum OrderPriority {
+  STANDARD
+  EXPRESS
+}
+
+enum QuoteStatus {
+  PENDING_CUSTOMER
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  CAPTURED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  FAILED
+}
+
+enum AgentAvailability {
+  ACTIVE
+  ON_LEAVE
+  UNAVAILABLE
+}
+
+enum InspectionResult {
+  PASS
+  FAIL
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+enum ConversationAgentState {
+  BOT
+  HANDOFF
+  AGENT
+  RESOLVED
+}
+
+enum ActorType {
+  CUSTOMER
+  OPS_ADMIN
+  FIELD_AGENT
+  SYSTEM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  TRIALING
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  OPS_MANAGER
+  SUPPORT_AGENT
+}
+
+model Customer {
+  id               String           @id @default(uuid())
+  name             String
+  email            String           @unique
+  emailVerified    Boolean          @default(false)
+  phoneUsa         String?
+  phoneIndia       String?
+  whatsappPhone    String?
+  passwordHash     String?
+  stripeCustomerId String?
+  kycStatus        KycStatus        @default(NOT_SUBMITTED)
+  subscriptionPlan SubscriptionPlan @default(NONE)
+  timezone         String           @default("America/New_York")
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  orders                Order[]
+  subscription          Subscription?
+  familyMembers         FamilyMember[]
+  indiaAddresses        IndiaAddress[]
+  usaShippingAddresses  UsaShippingAddress[]
+  renewalItems          RenewalItem[]
+  kycDocuments          KycDocument[]
+  whatsappConversations WhatsappConversation[]
+  refreshTokens         RefreshToken[]
+
+  @@map("customers")
+}
+
+model AdminUser {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         AdminRole @default(SUPPORT_AGENT)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("admin_users")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  token      String   @unique
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  orderNumber     String        @unique
+  customerId      String
+  customer        Customer      @relation(fields: [customerId], references: [id])
+  serviceType     ServiceType
+  title           String
+  description     String?       @db.Text
+  status          OrderStatus   @default(NEW_REQUEST)
+  priority        OrderPriority @default(STANDARD)
+  assignedOpsId   String?
+  assignedAgentId String?
+  agent           Agent?        @relation(fields: [assignedAgentId], references: [id])
+  slaDeadline     DateTime?
+  completedAt     DateTime?
+  customerRating  Int?
+  customerReview  String?       @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  requestData   OrderRequestData?
+  quotes        OrderQuote[]
+  payments      OrderPayment[]
+  inspection    OrderInspection?
+  shipment      OrderShipment?
+  events        OrderEvent[]
+  documents     Document[]
+  conversations WhatsappConversation[]
+
+  @@map("orders")
+}
+
+model OrderRequestData {
+  id      String @id @default(uuid())
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  data    Json
+
+  @@map("order_request_data")
+}
+
+model OrderQuote {
+  id              String      @id @default(uuid())
+  orderId         String
+  order           Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  version         Int         @default(1)
+  lineItems       Json
+  serviceFeeUsd   Decimal     @db.Decimal(10, 2)
+  productCostUsd  Decimal?    @db.Decimal(10, 2)
+  shippingCostUsd Decimal?    @db.Decimal(10, 2)
+  totalUsd        Decimal     @db.Decimal(10, 2)
+  notes           String?     @db.Text
+  vendorName      String?
+  vendorLocation  String?
+  status          QuoteStatus @default(PENDING_CUSTOMER)
+  expiresAt       DateTime
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?
+  createdBy       String?
+  createdAt       DateTime    @default(now())
+
+  payments OrderPayment[]
+
+  @@map("order_quotes")
+}
+
+model OrderPayment {
+  id              String        @id @default(uuid())
+  orderId         String
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  quoteId         String?
+  quote           OrderQuote?   @relation(fields: [quoteId], references: [id])
+  stripePaymentId String?
+  amountUsd       Decimal       @db.Decimal(10, 2)
+  status          PaymentStatus @default(PENDING)
+  refundAmountUsd Decimal?      @db.Decimal(10, 2)
+  refundReason    String?
+  chargedAt       DateTime?
+  refundedAt      DateTime?
+  createdAt       DateTime      @default(now())
+
+  @@map("order_payments")
+}
+
+model OrderInspection {
+  id            String            @id @default(uuid())
+  orderId       String            @unique
+  order         Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  inspectorId   String?
+  inspector     Agent?            @relation(fields: [inspectorId], references: [id])
+  productType   String
+  checklist     Json
+  overallResult InspectionResult?
+  failReason    String?           @db.Text
+  inspectedAt   DateTime?
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@map("order_inspections")
+}
+
+model OrderShipment {
+  id                          String    @id @default(uuid())
+  orderId                     String    @unique
+  order                       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  courier                     String?
+  trackingNumber              String?
+  waybillUrl                  String?
+  weightKg                    Decimal?  @db.Decimal(6, 3)
+  dimensionsCm                String?
+  actualShippingCostUsd       Decimal?  @db.Decimal(10, 2)
+  dispatchedAt                DateTime?
+  estimatedDelivery           DateTime?
+  deliveredAt                 DateTime?
+  customsStatus               String?
+  deliveryConfirmedByCustomer Boolean   @default(false)
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+
+  @@map("order_shipments")
+}
+
+model OrderEvent {
+  id         String    @id @default(uuid())
+  orderId    String
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  eventType  String
+  fromStatus String?
+  toStatus   String
+  actorType  ActorType
+  actorId    String?
+  notes      String?   @db.Text
+  isInternal Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  @@map("order_events")
+}
+
+model Document {
+  id                   String    @id @default(uuid())
+  orderId              String?
+  order                Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  inspectionId         String?
+  uploadedBy           String?
+  uploaderType         ActorType
+  docCategory          String
+  fileUrl              String
+  fileName             String
+  fileType             String?
+  fileSizeKb           Int?
+  caption              String?
+  isSharedWithCustomer Boolean   @default(true)
+  uploadedAt           DateTime  @default(now())
+
+  @@map("documents")
+}
+
+model Agent {
+  id              String            @id @default(uuid())
+  name            String
+  phone           String
+  email           String?
+  zones           String[]
+  specializations String[]
+  availability    AgentAvailability @default(ACTIVE)
+  maxTasks        Int               @default(10)
+  ratingAvg       Decimal?          @db.Decimal(3, 2)
+  ratingCount     Int               @default(0)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  orders      Order[]
+  inspections OrderInspection[]
+
+  @@map("agents")
+}
+
+model Subscription {
+  id                   String             @id @default(uuid())
+  customerId           String             @unique
+  customer             Customer           @relation(fields: [customerId], references: [id])
+  planName             SubscriptionPlan
+  stripeSubscriptionId String?
+  stripePriceId        String?
+  status               SubscriptionStatus @default(ACTIVE)
+  tasksLimit           Int
+  tasksUsed            Int                @default(0)
+  billingCycleStart    DateTime?
+  billingCycleEnd      DateTime?
+  createdAt            DateTime           @default(now())
+  cancelledAt          DateTime?
+
+  @@map("subscriptions")
+}
+
+model FamilyMember {
+  id           String   @id @default(uuid())
+  customerId   String
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  name         String
+  relationship String?
+  phone        String?
+  address      String?  @db.Text
+  healthNotes  String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  @@map("family_members")
+}
+
+model IndiaAddress {
+  id         String   @id @default(uuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  label      String
+  address    String   @db.Text
+  city       String?
+  pincode    String?
+  createdAt  DateTime @default(now())
+
+  @@map("india_addresses")
+}
+
+model UsaShippingAddress {
+  id           String   @id @default(uuid())
+  customerId   String
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  label        String
+  name         String
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  zip          String
+  phone        String?
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@map("usa_shipping_addresses")
+}
+
+model RenewalItem {
+  id              String    @id @default(uuid())
+  customerId      String
+  customer        Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type            String
+  label           String
+  provider        String?
+  referenceNumber String?
+  holderName      String?
+  approxAmountInr Decimal?  @db.Decimal(10, 2)
+  nextDueDate     DateTime?
+  reminder30dSent Boolean   @default(false)
+  reminder7dSent  Boolean   @default(false)
+  reminder1dSent  Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("renewal_items")
+}
+
+model KycDocument {
+  id          String    @id @default(uuid())
+  customerId  String
+  customer    Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  docType     String
+  fileUrl     String
+  status      KycStatus @default(SUBMITTED)
+  reviewerId  String?
+  reviewNotes String?
+  submittedAt DateTime  @default(now())
+  reviewedAt  DateTime?
+
+  @@map("kyc_documents")
+}
+
+model WhatsappConversation {
+  id             String                 @id @default(uuid())
+  customerId     String?
+  customer       Customer?              @relation(fields: [customerId], references: [id])
+  customerPhone  String
+  customerName   String?
+  currentOrderId String?
+  currentOrder   Order?                 @relation(fields: [currentOrderId], references: [id])
+  agentState     ConversationAgentState @default(BOT)
+  assignedOpsId  String?
+  isActive       Boolean                @default(true)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  messages WhatsappMessage[]
+
+  @@map("whatsapp_conversations")
+}
+
+model WhatsappMessage {
+  id              String               @id @default(uuid())
+  conversationId  String
+  conversation    WhatsappConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  wamid           String?              @unique
+  direction       MessageDirection
+  messageType     String
+  content         String?              @db.Text
+  templateName    String?
+  mediaUrl        String?
+  rawPayload      Json?
+  status          MessageStatus        @default(QUEUED)
+  failureReason   String?
+  receivedAt      DateTime?
+  statusUpdatedAt DateTime?
+  createdAt       DateTime             @default(now())
+
+  @@map("whatsapp_messages")
+}
