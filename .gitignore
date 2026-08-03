@@ -3,11 +3,12 @@ node_modules/
 .pnp
 .pnp.js
 
-# Build outputs
-dist/
-build/
-.next/
-out/
+# Build outputs — app-specific (don't ignore packages/database/dist, it must build on CI)
+apps/web/.next/
+apps/web/out/
+apps/api/dist/
+apps/admin/dist/
+apps/agent/dist/
 
 # Environment — never commit real secrets
 .env
@@ -17,15 +18,9 @@ out/
 # Redis dump
 dump.rdb
 
-# Prisma generated client (regenerated on install)
-packages/database/node_modules/
-node_modules/.prisma/
-
 # Logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # OS
 .DS_Store
@@ -35,7 +30,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
-*.swo
 
 # Turborepo cache
 .turbo/
