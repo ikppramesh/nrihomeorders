@@ -28,7 +28,6 @@ export default function ProfilePage() {
   const [form, setForm] = useState({
     name: '',
     phoneUsa: '',
-    whatsappPhone: '',
   });
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirm: '' });
   const [pwError, setPwError] = useState('');
@@ -41,7 +40,6 @@ export default function ProfilePage() {
       setForm({
         name: profile.name ?? '',
         phoneUsa: profile.phoneUsa ?? '',
-        whatsappPhone: profile.whatsappPhone ?? '',
       });
     }
   }, [profile]);
@@ -50,7 +48,6 @@ export default function ProfilePage() {
     mutationFn: () => api.patch('/profile', {
       name: form.name.trim(),
       phoneUsa: form.phoneUsa.trim() || undefined,
-      whatsappPhone: form.whatsappPhone.trim() || undefined,
     }),
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['profile'] });
@@ -148,19 +145,6 @@ export default function ProfilePage() {
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">WhatsApp Number</label>
-            <p className="text-xs text-gray-400 mb-1.5">Include country code, e.g. +91 98765 43210 or +1 555 000 0000</p>
-            <input
-              type="tel"
-              value={form.whatsappPhone}
-              onChange={e => setForm(p => ({ ...p, whatsappPhone: e.target.value }))}
-              placeholder="+91 98765 43210"
-              inputMode="tel"
-              className="w-full border border-gray-300 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <p className="text-xs text-indigo-600 mt-1.5">Order updates, quotes & support are sent to this number.</p>
-          </div>
         </div>
 
         <button
@@ -228,24 +212,12 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      {/* Danger zone */}
+      {/* Need help */}
       <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-red-100">
         <h2 className="font-semibold text-red-700 mb-1 text-sm sm:text-base">Need help?</h2>
         <p className="text-xs text-gray-500 mb-3">
-          To close your account or update your delivery address in Hyderabad, message us on WhatsApp.
+          To close your account or update your delivery address in Hyderabad, contact us at hello@nriconcierge.com.
         </p>
-        {profile?.whatsappPhone ? (
-          <a
-            href={`https://wa.me/${profile.whatsappPhone.replace(/\D/g, '')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-green-600"
-          >
-            <span>📱</span> WhatsApp Support
-          </a>
-        ) : (
-          <p className="text-xs text-gray-400">Add your WhatsApp number above to contact support.</p>
-        )}
       </div>
     </div>
   );

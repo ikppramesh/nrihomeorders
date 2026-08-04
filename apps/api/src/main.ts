@@ -6,7 +6,7 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    rawBody: true, // needed for Stripe + WhatsApp HMAC
+    rawBody: true, // needed for Stripe HMAC
   });
 
   app.setGlobalPrefix('v1');

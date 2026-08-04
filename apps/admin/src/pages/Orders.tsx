@@ -84,7 +84,6 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <p className="font-medium">{o.customer?.name}</p>
-                      <p className="text-gray-400 text-xs">{o.customer?.whatsappPhone}</p>
                     </td>
                     <td className="px-4 py-3 max-w-[200px] truncate">{o.title}</td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{o.serviceType?.replace(/_/g, ' ')}</td>

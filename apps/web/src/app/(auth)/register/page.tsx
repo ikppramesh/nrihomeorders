@@ -6,15 +6,14 @@ import { api } from '@/lib/api';
 import { useAuthStore } from '@/lib/auth-store';
 
 const FIELDS = [
-  { key: 'name',          label: 'Full Name',                 type: 'text',     placeholder: 'Ramesh Kumar',          autoComplete: 'name',        inputMode: 'text' },
-  { key: 'email',         label: 'Email Address',             type: 'email',    placeholder: 'you@example.com',       autoComplete: 'email',       inputMode: 'email' },
-  { key: 'password',      label: 'Password',                  type: 'password', placeholder: 'Minimum 8 characters',  autoComplete: 'new-password', inputMode: 'text' },
-  { key: 'phoneUsa',      label: 'US Phone Number',           type: 'tel',      placeholder: '+1 XXX XXX XXXX',       autoComplete: 'tel',         inputMode: 'tel' },
-  { key: 'whatsappPhone', label: 'WhatsApp Number (India)',   type: 'tel',      placeholder: '+91 XXXXX XXXXX',       autoComplete: 'tel',         inputMode: 'tel' },
+  { key: 'name',     label: 'Full Name',       type: 'text',     placeholder: 'Ramesh Kumar',         autoComplete: 'name',        inputMode: 'text' },
+  { key: 'email',    label: 'Email Address',   type: 'email',    placeholder: 'you@example.com',      autoComplete: 'email',       inputMode: 'email' },
+  { key: 'password', label: 'Password',        type: 'password', placeholder: 'Minimum 8 characters', autoComplete: 'new-password', inputMode: 'text' },
+  { key: 'phoneUsa', label: 'US Phone Number', type: 'tel',      placeholder: '+1 XXX XXX XXXX',      autoComplete: 'tel',         inputMode: 'tel' },
 ] as const;
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', phoneUsa: '', whatsappPhone: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', phoneUsa: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -60,9 +59,6 @@ export default function RegisterPage() {
               />
             </div>
           ))}
-          <p className="text-xs text-gray-500 bg-indigo-50 rounded-xl p-3">
-            📱 Your WhatsApp number receives real-time order updates from our agents in Hyderabad.
-          </p>
           <button
             type="submit" disabled={loading}
             className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold text-base hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 transition-colors mt-2"

@@ -70,11 +70,10 @@ export default function HomePage() {
       <section className="bg-indigo-700 py-12 sm:py-16">
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
           <h2 className="text-2xl sm:text-3xl font-bold mb-8">Our Promise to You</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
             {[
               { icon: '🔍', title: '100% Transparent', desc: 'See every cost broken down — service fee, product, shipping. Zero markup. Zero hidden charges.' },
               { icon: '📸', title: 'Physical Verification', desc: 'Every product is inspected by our agent. Photos and video shared before shipping.' },
-              { icon: '💬', title: 'WhatsApp Updates', desc: 'Real-time updates at every stage on WhatsApp. Your dedicated support agent always accessible.' },
             ].map(({ icon, title, desc }) => (
               <div key={title}>
                 <div className="text-3xl mb-2">{icon}</div>
@@ -108,7 +107,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t py-8 sm:py-12 text-center text-gray-500 text-xs sm:text-sm px-4">
         <p>© {new Date().getFullYear()} NRI Concierge. Based in Hyderabad, India. Serving NRIs in the USA.</p>
-        <p className="mt-2">WhatsApp: +91 XXXXX XXXXX | Email: hello@nriconcierge.com</p>
+        <p className="mt-2">Email: hello@nriconcierge.com</p>
       </footer>
     </main>
   );

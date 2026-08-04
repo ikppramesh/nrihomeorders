@@ -44,9 +44,7 @@ export default function TaskDetailPage() {
         <div className="bg-white rounded-xl p-4 shadow-sm border">
           <h2 className="font-semibold mb-2">Customer Details</h2>
           <p className="font-medium">{task.customer?.name}</p>
-          <a href={`https://wa.me/${task.customer?.whatsappPhone?.replace(/\D/g, '')}`} className="text-green-600 text-sm">
-            WhatsApp: {task.customer?.whatsappPhone}
-          </a>
+          <p className="text-gray-500 text-sm">{task.customer?.email}</p>
         </div>
 
         {/* Task description */}

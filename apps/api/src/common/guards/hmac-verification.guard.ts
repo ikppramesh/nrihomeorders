@@ -14,7 +14,7 @@ export class HmacVerificationGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest<Request>();
     const signature = req.headers['x-hub-signature-256'] as string;
-    const secret = this.config.get<string>('WHATSAPP_APP_SECRET', '');
+    const secret = this.config.get<string>('WEBHOOK_APP_SECRET', '');
 
     if (!signature) throw new UnauthorizedException('Missing x-hub-signature-256');
 
@@ -25,7 +25,7 @@ export class HmacVerificationGuard implements CanActivate {
       signature.length !== expected.length ||
       !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
     ) {
-      this.logger.warn('HMAC mismatch on WhatsApp webhook');
+      this.logger.warn('HMAC mismatch on webhook');
       throw new UnauthorizedException('Invalid signature');
     }
     return true;

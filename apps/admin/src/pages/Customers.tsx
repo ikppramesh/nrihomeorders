@@ -51,7 +51,6 @@ export default function CustomersPage() {
                 <tr>
                   <th className="px-4 py-3 font-medium text-gray-600">Name</th>
                   <th className="px-4 py-3 font-medium text-gray-600">Email</th>
-                  <th className="px-4 py-3 font-medium text-gray-600">WhatsApp</th>
                   <th className="px-4 py-3 font-medium text-gray-600">KYC</th>
                   <th className="px-4 py-3 font-medium text-gray-600">Plan</th>
                   <th className="px-4 py-3 font-medium text-gray-600">Orders</th>
@@ -65,7 +64,6 @@ export default function CustomersPage() {
                       <Link to={`/customers/${c.id}`} className="font-medium text-indigo-600 hover:underline">{c.name}</Link>
                     </td>
                     <td className="px-4 py-3 text-gray-600">{c.email}</td>
-                    <td className="px-4 py-3 text-gray-500">{c.whatsappPhone ?? '—'}</td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2 py-1 rounded-full ${c.kycStatus === 'VERIFIED' ? 'bg-green-100 text-green-700' : c.kycStatus === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {c.kycStatus}

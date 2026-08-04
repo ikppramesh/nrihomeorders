@@ -122,7 +122,7 @@ function NewRequestContent() {
           </div>
 
           <div className="mt-5 bg-indigo-50 rounded-xl p-4 text-xs sm:text-sm text-indigo-800">
-            <strong>What happens next:</strong> Our team in Hyderabad will review your request, prepare a fully itemized quote (product cost + shipping + our flat service fee), and send it to your WhatsApp for approval. No payment until you say yes.
+            <strong>What happens next:</strong> Our team in Hyderabad will review your request, prepare a fully itemized quote (product cost + shipping + our flat service fee), and send it to you for approval. No payment until you say yes.
           </div>
 
           <button

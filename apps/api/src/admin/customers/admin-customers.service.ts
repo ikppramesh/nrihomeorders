@@ -10,7 +10,7 @@ export class AdminCustomersService {
     const [customers, total] = await Promise.all([
       prisma.customer.findMany({
         where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit,
-        select: { id: true, name: true, email: true, phoneUsa: true, whatsappPhone: true, kycStatus: true, subscriptionPlan: true, createdAt: true, isActive: true, _count: { select: { orders: true } } },
+        select: { id: true, name: true, email: true, phoneUsa: true, kycStatus: true, subscriptionPlan: true, createdAt: true, isActive: true, _count: { select: { orders: true } } },
       }),
       prisma.customer.count({ where }),
     ]);

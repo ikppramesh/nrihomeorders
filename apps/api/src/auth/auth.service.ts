@@ -14,7 +14,7 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
-  async register(dto: { name: string; email: string; password: string; phoneUsa?: string; phoneIndia?: string; whatsappPhone?: string }) {
+  async register(dto: { name: string; email: string; password: string; phoneUsa?: string; phoneIndia?: string }) {
     const existing = await prisma.customer.findUnique({ where: { email: dto.email } });
     if (existing) throw new ConflictException('Email already registered');
     const passwordHash = await bcrypt.hash(dto.password, 12);
@@ -22,7 +22,6 @@ export class AuthService {
       data: {
         name: dto.name, email: dto.email,
         phoneUsa: dto.phoneUsa, phoneIndia: dto.phoneIndia,
-        whatsappPhone: dto.whatsappPhone ?? dto.phoneUsa,
         passwordHash,
       },
     });

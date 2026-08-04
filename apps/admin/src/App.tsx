@@ -7,7 +7,6 @@ import OrdersPage from './pages/Orders';
 import OrderDetailPage from './pages/OrderDetail';
 import CustomersPage from './pages/Customers';
 import CustomerDetailPage from './pages/CustomerDetail';
-import WhatsappPage from './pages/Whatsapp';
 import AgentsPage from './pages/Agents';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -27,7 +26,6 @@ export default function App() {
         <Route path="orders/:id" element={<OrderDetailPage />} />
         <Route path="customers" element={<CustomersPage />} />
         <Route path="customers/:id" element={<CustomerDetailPage />} />
-        <Route path="whatsapp" element={<WhatsappPage />} />
         <Route path="agents" element={<AgentsPage />} />
       </Route>
     </Routes>

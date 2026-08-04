@@ -28,7 +28,7 @@ export class AdminOrdersService {
         where, orderBy: { updatedAt: 'desc' },
         skip: (page - 1) * limit, take: limit,
         include: {
-          customer: { select: { name: true, email: true, whatsappPhone: true } },
+          customer: { select: { name: true, email: true } },
           agent: { select: { name: true } },
           quotes: { where: { status: 'PENDING_CUSTOMER' }, take: 1 },
         },

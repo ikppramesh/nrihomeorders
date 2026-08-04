@@ -47,7 +47,7 @@ export default function DashboardPage() {
         {[
           { icon: '🔍', text: 'Zero hidden fees' },
           { icon: '📸', text: 'Physical inspection' },
-          { icon: '💬', text: 'WhatsApp updates' },
+          { icon: '💬', text: 'Real-time updates' },
         ].map(({ icon, text }) => (
           <div key={text} className="flex items-center gap-2 text-sm text-indigo-700">
             <span>{icon}</span>

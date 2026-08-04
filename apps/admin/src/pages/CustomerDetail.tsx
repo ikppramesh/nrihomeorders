@@ -35,7 +35,6 @@ export default function CustomerDetailPage() {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div><p className="text-gray-500">Email</p><p className="font-medium">{customer.email}</p></div>
               <div><p className="text-gray-500">US Phone</p><p className="font-medium">{customer.phoneUsa ?? '—'}</p></div>
-              <div><p className="text-gray-500">WhatsApp</p><p className="font-medium">{customer.whatsappPhone ?? '—'}</p></div>
               <div><p className="text-gray-500">Joined</p><p className="font-medium">{new Date(customer.createdAt).toLocaleDateString()}</p></div>
               <div><p className="text-gray-500">Plan</p><p className="font-medium">{customer.subscriptionPlan}</p></div>
               <div><p className="text-gray-500">KYC</p>

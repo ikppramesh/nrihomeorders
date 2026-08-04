@@ -81,26 +81,6 @@ enum InspectionResult {
   FAIL
 }
 
-enum MessageDirection {
-  INBOUND
-  OUTBOUND
-}
-
-enum MessageStatus {
-  QUEUED
-  SENT
-  DELIVERED
-  READ
-  FAILED
-}
-
-enum ConversationAgentState {
-  BOT
-  HANDOFF
-  AGENT
-  RESOLVED
-}
-
 enum ActorType {
   CUSTOMER
   OPS_ADMIN
@@ -128,7 +108,6 @@ model Customer {
   emailVerified    Boolean          @default(false)
   phoneUsa         String?
   phoneIndia       String?
-  whatsappPhone    String?
   passwordHash     String?
   stripeCustomerId String?
   kycStatus        KycStatus        @default(NOT_SUBMITTED)
@@ -145,7 +124,6 @@ model Customer {
   usaShippingAddresses  UsaShippingAddress[]
   renewalItems          RenewalItem[]
   kycDocuments          KycDocument[]
-  whatsappConversations WhatsappConversation[]
   refreshTokens         RefreshToken[]
 
   @@map("customers")
@@ -202,7 +180,6 @@ model Order {
   shipment      OrderShipment?
   events        OrderEvent[]
   documents     Document[]
-  conversations WhatsappConversation[]
 
   @@map("orders")
 }
@@ -454,41 +431,3 @@ model KycDocument {
   @@map("kyc_documents")
 }
 
-model WhatsappConversation {
-  id             String                 @id @default(uuid())
-  customerId     String?
-  customer       Customer?              @relation(fields: [customerId], references: [id])
-  customerPhone  String
-  customerName   String?
-  currentOrderId String?
-  currentOrder   Order?                 @relation(fields: [currentOrderId], references: [id])
-  agentState     ConversationAgentState @default(BOT)
-  assignedOpsId  String?
-  isActive       Boolean                @default(true)
-  createdAt      DateTime               @default(now())
-  updatedAt      DateTime               @updatedAt
-
-  messages WhatsappMessage[]
-
-  @@map("whatsapp_conversations")
-}
-
-model WhatsappMessage {
-  id              String               @id @default(uuid())
-  conversationId  String
-  conversation    WhatsappConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  wamid           String?              @unique
-  direction       MessageDirection
-  messageType     String
-  content         String?              @db.Text
-  templateName    String?
-  mediaUrl        String?
-  rawPayload      Json?
-  status          MessageStatus        @default(QUEUED)
-  failureReason   String?
-  receivedAt      DateTime?
-  statusUpdatedAt DateTime?
-  createdAt       DateTime             @default(now())
-
-  @@map("whatsapp_messages")
-}

@@ -55,7 +55,7 @@ export default function RenewalsPage() {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Renewal Reminders</h1>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            WhatsApp alerts sent 30 days, 7 days & 1 day before each due date
+            Email reminders sent 30 days, 7 days &amp; 1 day before each due date
           </p>
         </div>
         <button
@@ -133,7 +133,7 @@ export default function RenewalsPage() {
           <div className="text-4xl mb-3">🔔</div>
           <p className="font-semibold text-gray-700">No renewal reminders set up yet</p>
           <p className="text-gray-500 text-sm mt-2 max-w-xs mx-auto">
-            Add reminders for bills, insurance, and government dues — we will WhatsApp you before each deadline.
+            Add reminders for bills, insurance, and government dues — we will email you before each deadline.
           </p>
         </div>
       ) : (

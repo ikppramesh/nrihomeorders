@@ -18,7 +18,7 @@ const STATUS_TEMPLATES: Record<string, string[]> = {
   ],
   UNDER_REVIEW: [
     "We're currently reviewing your request and gathering pricing information. You'll receive a detailed quote shortly.",
-    "Our team is on it — we'll notify you on WhatsApp the moment your quote is ready.",
+    "Our team is on it — we'll notify you the moment your quote is ready.",
   ],
   QUOTE_SENT: [
     "Your quote is ready for review! Please approve within 48 hours — the quote will expire after that. Feel free to ask if you have any questions.",
@@ -26,7 +26,7 @@ const STATUS_TEMPLATES: Record<string, string[]> = {
   ],
   APPROVED_PAID: [
     "Payment confirmed — thank you! Our Hyderabad team will begin working on your request right away.",
-    "We're on it! You'll get WhatsApp updates as we make progress on your order.",
+    "We're on it! You'll get updates as we make progress on your order.",
   ],
   SOURCING: [
     "Our team is currently sourcing your items in Hyderabad. We'll update you once everything is in hand.",
@@ -50,7 +50,7 @@ const STATUS_TEMPLATES: Record<string, string[]> = {
   ],
   DISPATCHED: [
     "Your order has been dispatched! Tracking number: [add tracking #]. Estimated delivery: [add date].",
-    "Shipped! We've sent the tracking details to your WhatsApp. Let us know if you have any questions.",
+    "Shipped! We've sent the tracking details to your email. Let us know if you have any questions.",
   ],
   IN_TRANSIT: [
     "Your package is on its way! Expected delivery: [add date]. You can track it here: [add link].",
@@ -157,15 +157,6 @@ export default function OrderDetailPage() {
             <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Customer</h2>
             <p className="font-semibold text-gray-900">{order.customer?.name}</p>
             <p className="text-sm text-gray-500 mt-0.5">{order.customer?.email}</p>
-            {order.customer?.whatsappPhone && (
-              <a
-                href={`https://wa.me/${order.customer.whatsappPhone.replace(/\D/g, '')}`}
-                target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-green-600 hover:text-green-700"
-              >
-                📱 {order.customer.whatsappPhone}
-              </a>
-            )}
           </div>
 
           {/* Request */}
