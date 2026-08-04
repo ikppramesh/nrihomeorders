@@ -1,2 +1,5 @@
 name = "nrihomeorders"
-pages_build_output_dir = "apps/admin/dist"
+compatibility_date = "2026-08-04"
+
+[assets]
+directory = "apps/admin/dist"
