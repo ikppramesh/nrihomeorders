@@ -1,8 +1,13 @@
 'use client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useRef, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/lib/auth-store';
+
+export function generateStaticParams() {
+  return [{ id: '_' }];
+}
 import { StatusBadge } from '@homebridge/ui';
 import Link from 'next/link';
 
@@ -57,15 +62,16 @@ function OrderTracker({ status, serviceType }: { status: string; serviceType: st
   );
 }
 
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
+export default function OrderDetailPage() {
+  const { id } = useParams<{ id: string }>();
   const qc = useQueryClient();
   const { user } = useAuthStore();
   const bottomRef = useRef<HTMLDivElement>(null);
   const [compose, setCompose] = useState('');
 
   const { data: order, isLoading } = useQuery({
-    queryKey: ['order', params.id],
-    queryFn: () => api.get(`/orders/${params.id}`).then(r => r.data),
+    queryKey: ['order', id],
+    queryFn: () => api.get(`/orders/${id}`).then(r => r.data),
   });
 
   // Auto-scroll chat to bottom when new events arrive
@@ -75,18 +81,18 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
   const { mutate: approveQuote } = useMutation({
     mutationFn: (quoteId: string) => api.patch(`/quotes/${quoteId}/approve`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['order', params.id] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['order', id] }),
   });
 
   const { mutate: cancelOrder } = useMutation({
-    mutationFn: () => api.patch(`/orders/${params.id}/cancel`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['order', params.id] }),
+    mutationFn: () => api.patch(`/orders/${id}/cancel`),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['order', id] }),
   });
 
   const { mutate: sendReply, isPending: sending } = useMutation({
-    mutationFn: () => api.post(`/orders/${params.id}/message`, { message: compose }),
+    mutationFn: () => api.post(`/orders/${id}/message`, { message: compose }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['order', params.id] });
+      qc.invalidateQueries({ queryKey: ['order', id] });
       setCompose('');
     },
   });
